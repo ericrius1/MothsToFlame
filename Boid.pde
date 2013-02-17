@@ -15,6 +15,9 @@ class Boid {
   PVector cohese;
   PVector seek;
   PVector sum;
+  PVector desired;
+  PVector steer;
+  PVector difference;
   float r;
   float maxforce;    // Maximum steering force
   float maxspeed;    // Maximum speed
@@ -72,7 +75,7 @@ class Boid {
   // A method that calculates and applies a steering force towards a target
   // STEER = DESIRED MINUS VELOCITY
   PVector seek(PVector target) {
-    PVector desired = PVector.sub(target,location);  // A vector pointing from the location to the target
+     desired = PVector.sub(target,location);  // A vector pointing from the location to the target
     // Normalize desired and scale to maximum speed
     desired.normalize();
     desired.mult(maxspeed);
@@ -110,7 +113,7 @@ class Boid {
   // Method checks for nearby boids and steers away
   PVector separate (ArrayList<Boid> boids) {
     float desiredseparation = 25.0f;
-    PVector steer = new PVector(0,0,0);
+     steer = new PVector(0,0,0);
     int count = 0;
     // For every boid in the system, check if it's too close
     for (Boid other : boids) {
@@ -118,10 +121,10 @@ class Boid {
       // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
       if ((d > 0) && (d < desiredseparation)) {
         // Calculate vector pointing away from neighbor
-        PVector diff = PVector.sub(location,other.location);
-        diff.normalize();
-        diff.div(d);        // Weight by distance
-        steer.add(diff);
+        difference = PVector.sub(location,other.location);
+        difference.normalize();
+        difference.div(d);        // Weight by distance
+        steer.add(difference);
         count++;            // Keep track of how many
       }
     }
@@ -158,7 +161,7 @@ class Boid {
       sum.div((float)count);
       sum.normalize();
       sum.mult(maxspeed);
-      PVector steer = PVector.sub(sum,velocity);
+      steer = PVector.sub(sum,velocity);
       steer.limit(maxforce);
       return steer;
     } else {
